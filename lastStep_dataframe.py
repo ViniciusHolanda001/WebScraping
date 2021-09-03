@@ -16,7 +16,7 @@ class DataSet():
             '//*[@id="classificacao__wrapper"]/article/section[1]/div/table[1]/tbody/tr'
         ))
 
-        # Second table whit the points
+        # Second table with the points
         self.points_len = len(self.con.driver.find_elements_by_xpath(
             '//*[@id="classificacao__wrapper"]/article/section[1]/div/table[2]/tbody/tr[1]/td'
         ))-1
