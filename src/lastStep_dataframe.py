@@ -1,12 +1,13 @@
-from secStep_testConect import TestConect
 import pandas as pd
+from secStep_testConnect import TestConnect
+
 
 class DataSet():
     """
     Realiza a extração dos dados
     """
     def __init__(self):
-        self.teste = TestConect().conect_web()
+        self.teste = TestConnect().connect_web()
         self.con = self.teste
         self.table = list()
         self.teams = list()
@@ -26,12 +27,8 @@ class DataSet():
             '//*[@id="classificacao__wrapper"]/article/section[1]/div/table[2]/tbody/tr[1]/td[10]/span'
         ))
 
+    def scraping_data_from_website(self):
 
-    def dataCollect(self):
-        """
-        Faz a raspagem de dados do site
-        :return: Retorna uma lista de listas com os dados de cada time
-        """
         linha = 1
         while linha <= self.names_len:
             self.teams.clear()
@@ -46,36 +43,37 @@ class DataSet():
                 )
                 pointsTeam = pointsTeam.text
                 self.teams.append(pointsTeam)
+
             for j in range(self.games_len):
                 gamesTeam = self.con.driver.find_element_by_xpath(
                     f'//*[@id="classificacao__wrapper"]/article/section[1]/div/table[2]/tbody/tr[{linha}]/td[10]/span[{j + 1}]'
                 )
                 gamesTeam = str(gamesTeam.get_attribute('class').split()[1][-1])
                 self.teams.append(gamesTeam)
+
             self.table.append(self.teams[:])
             linha += 1
+
         return self.table
 
+    def data_to_dataframe(self):
 
-    def csv_doc(self):
-        """
-        Listas para DataFrame
-        :return: Dataframe (df)
-        """
         self.data = self.dataCollect()
-        df = pd.DataFrame(self.data,
-                          columns=['Classificação', 'P', 'J', 'v', 'E',
-                                   'D', 'GP', 'GC', 'SG', '%',
-                                   '5º últ.', '4º últ.', '3º últ.',
-                                   '2º últ.', 'Último jogo']
-                          )
+        df = pd.DataFrame(
+            self.data,
+            columns=[
+                'Classificação', 'P', 'J', 'v', 'E', 'D',
+                'GP', 'GC', 'SG', '%', '5º últ.', '4º últ.',
+                '3º últ.', '2º últ.', 'Último jogo'
+            ]
+        )
+
         return df
 
 
-# Execução do código
-
-web_scrap = DataSet()
-teste_conect = web_scrap.teste
-dataframe_teste = web_scrap.csv_doc()
-print(dataframe_teste)
-web_scrap.con.driver.close()
+if __name__ == '__main__':
+    web_scrap = DataSet()
+    teste_connect = web_scrap.teste
+    dataframe_teste = web_scrap.csv_doc()
+    print(dataframe_teste)
+    web_scrap.con.driver.close()
